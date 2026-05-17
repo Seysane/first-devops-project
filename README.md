@@ -45,6 +45,8 @@ chmod +x scripts/setup.sh
 ```
 
 <h2 id="project-structure">Project Structure<span style="float:right">📂</span></h2>
+
+
 ```text
 ├── docs                # Theoretical documentation of the project 
 │   ├── architecture.md   # DevOps Philosophy
