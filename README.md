@@ -48,15 +48,16 @@ chmod +x scripts/setup.sh
 
 
 ```text
-├── docs                # Theoretical documentation of the project 
-│   ├── architecture.md   # DevOps Philosophy
-│   ├── metrics.md        # DORA Metrics definitions
-│   └── tools.md          # List of installed tools
+├── docs                      # Theoretical documentation of the project 
+│   ├── architecture.md        # DevOps Philosophy
+│   ├── filesystem-notes.md    # Filesystem exploration notes
+│   ├── metrics.md             # DORA Metrics definitions
+│   └── tools.md               # List of installed tools
 ├── README.md
-├── scripts             # Scripts to automate configuration
-│   └── setup.sh          # Simple script installing tools used on course
-├── src                 # Source code of the application 
-└── tests               # Infrastructure and code testing
+├── scripts                   # Scripts to automate configuration
+│   └── setup.sh               # Simple script installing tools used on course
+├── src                        # Source code of the application 
+└── tests                      # Infrastructure and code testing
 ```
 
 
