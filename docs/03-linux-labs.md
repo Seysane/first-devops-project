@@ -60,3 +60,38 @@ he terminal returned a count of 40 blocked connections at that moment.
 I was curious about what UFW was actually blocking, considering the count jumped from 1 to 40 in just one hour. I searched Google and found a 5-year-old StackOverflow post from someone asking the same question. In his case, it was a public server hosting a website, and the traffic came from Russian IP addresses, probably bots.
 
 However, when I analyzed the MAC address from my own ufw.log (I was away from home but connected to a trusted Wi-Fi network) and checked it on macvendors.com, the result showed "Apple, Inc.". It turns out it was likely my girlfriend's iPad MAC address. I started questioning its security because it felt weird that an iPad was broadcasting network traffic to my laptop. I will definitely investigate her iPad later.
+
+---
+
+## 2. Creating a persistent environment variable
+
+The second exercise was to create a persistent environment variable named COURSE_STATUS="during_the_course". The hint was to read about the ~/.bashrc and ~/.profile files.
+
+As I knew before I can write it at the bottom of /.bashrc file to make them load when the new temrinal comes up and it loads the instructions inside.
+
+So, I used the following command:
+
+```bash
+nano ~/.bashrc
+```
+
+And I added the following line at the very end of the file:
+
+```bash
+COURSE_STATUS="during_the_course"
+```
+However, what I didn't know before was that I needed to include the export keyword before the variable name to make it a true environment variable:
+
+```bash
+export COURSE_STATUS="during_the_course"
+```
+
+Regarding the difference between the two files mentioned in the hint:
+
+```bash
+~/.profile (Login Shell) - it loads only once when user logs into system. 
+```
+
+```bash
+~/.bashrc (Interactive Non-Login Shell) - it loads every time a new interactive terminal window is opened.
+```
