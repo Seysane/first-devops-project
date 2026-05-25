@@ -80,6 +80,7 @@ And I added the following line at the very end of the file:
 ```bash
 COURSE_STATUS="during_the_course"
 ```
+
 However, what I didn't know before was that I needed to include the export keyword before the variable name to make it a true environment variable:
 
 ```bash
@@ -95,3 +96,55 @@ Regarding the difference between the two files mentioned in the hint:
 ```bash
 ~/.bashrc (Interactive Non-Login Shell) - it loads every time a new interactive terminal window is opened.
 ```
+
+---
+
+# 3. Top 5 Users by Number of Processes
+
+In this exercise, I had to create a single long command using pipes (|) that would:
+
+    List all active processes.
+
+    Cut only the first column (usernames).
+
+    Sort the usernames alphabetically.
+
+    Count the occurrences of each username (showing how many processes each user has).
+
+    Sort the numerical results in descending order (from highest to lowest).
+
+    Display only the first 5 lines.
+
+The exercise hint was quite big because the author listed the exact commands and flags needed: cut, sort, uniq -c, and head. They even provided an example: ps aux | cut -d' ' -f1 | sort | uniq -c | sort -rn | head -5.
+
+I automatically copied this long command:
+
+```bash
+ps aux | cut -d' ' -f1 | sort | uniq -c | sort -rn | head -5
+```
+
+and pasted it into my terminal. It worked perfectly fine. 
+
+```bash
+    222 root
+     94 sane
+      3 systemd+
+      2 kernoops
+      2 avahi
+```
+
+However, I was curious if there was something odd about this command, so I asked Google Gemini about it, and it compared it with another tool and found an interesting difference.
+
+Instead of using:
+
+```bash
+cut -d' ' -f1
+```
+
+I could use:
+
+```bash
+awk '{print $1}'
+```
+
+When I tested both, they actually gave me the exact same result! But under the hood, there is a big difference. The command cut -d' ' -f1 cuts everything after the first space. It worked here only because the usernames are at the very beginning of the line. If there were multiple spaces between columns (like before the PID or %CPU columns to keep the table aligned), cut would break and return empty lines. On the other hand, awk automatically handles any number of spaces, making it much more reliable for this kind of task.
