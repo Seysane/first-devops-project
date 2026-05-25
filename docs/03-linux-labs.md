@@ -148,3 +148,57 @@ awk '{print $1}'
 ```
 
 When I tested both, they actually gave me the exact same result! But under the hood, there is a big difference. The command cut -d' ' -f1 cuts everything after the first space. It worked here only because the usernames are at the very beginning of the line. If there were multiple spaces between columns (like before the PID or %CPU columns to keep the table aligned), cut would break and return empty lines. On the other hand, awk automatically handles any number of spaces, making it much more reliable for this kind of task.
+
+---
+
+# 4. Identifying File Owner and Network Analysis (ss)
+
+The goal of this exercise was to find which package provides the ss command (the modern replacement for netstat).
+
+First, I checked where the ss binary is located using which:
+
+```bash
+which ss
+Output: /usr/bin/ss
+```
+
+Then, I wanted to find the package that owns this file using dpkg -S. I had to use a wildcard (*bin/ss) because of how the system handles directory paths:
+
+```bash
+dpkg -S *bin/ss
+Output: iproute2: /bin/ss
+```
+
+The command ss is provided by the iproute2 package, which is a core networking package in Ubuntu and was already installed on my system.
+
+Next, I ran the command to check all active, listening TCP ports in a numeric format:
+
+```bash
+ss -ltn
+```
+
+My output:
+
+```text
+State      Recv-Q     Send-Q        Local Address:Port           Peer Address:Port     Process    
+LISTEN     0          4096             127.0.0.54:53                0.0.0.0:*                  
+LISTEN     0          4096              127.0.0.1:631               0.0.0.0:*                  
+LISTEN     0          4096          127.0.0.53%lo:53                0.0.0.0:*                  
+LISTEN     0          4096                  [::1]:631                  [::]:*
+```
+
+What these flags mean:
+
+    -l (listening): Shows only sockets that are actively waiting for incoming connections.
+
+    -t (TCP): Filters the results to show only TCP connections.
+
+    -n (numeric): Shows raw port numbers and IP addresses instead of resolving them into service names (like showing 631 instead of ipp/cups).
+
+My analysis of the open ports:
+
+    Ports 53 (127.0.0.53 / 127.0.0.54): This is the standard DNS port. In Ubuntu, it is managed by systemd-resolved acting as a local DNS forwarder.
+
+    Ports 631 (127.0.0.1 / [::1]): This is the CUPS service, which is the Common Unix Printing System responsible for managing printers. It listens only on localhost, meaning it's secured and not accessible from the outside network.
+
+---
