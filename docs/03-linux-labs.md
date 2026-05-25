@@ -99,7 +99,7 @@ Regarding the difference between the two files mentioned in the hint:
 
 ---
 
-# 3. Top 5 Users by Number of Processes
+## 3. Top 5 Users by Number of Processes
 
 In this exercise, I had to create a single long command using pipes (|) that would:
 
@@ -151,7 +151,7 @@ When I tested both, they actually gave me the exact same result! But under the h
 
 ---
 
-# 4. Identifying File Owner and Network Analysis (ss)
+## 4. Identifying File Owner and Network Analysis (ss)
 
 The goal of this exercise was to find which package provides the ss command (the modern replacement for netstat).
 
@@ -202,3 +202,44 @@ My analysis of the open ports:
     Ports 631 (127.0.0.1 / [::1]): This is the CUPS service, which is the Common Unix Printing System responsible for managing printers. It listens only on localhost, meaning it's secured and not accessible from the outside network.
 
 ---
+
+## 5. Log Cleanup Using find and xargs
+
+The goal of this exercise was to find and safely delete all old, compressed log files (with the .gz extension) inside the /var/log directory using find, xargs, and rm.
+
+Since rm is a dangerous command, I followed a safe 3-step DevOps approach to ensure no critical files were accidentally deleted.
+
+#### Step 1: Verification (Dry Run)
+
+First, I ran a simple search to list all .gz files and verify what find could see:
+
+```bash
+find /var/log/ -name "*.gz"
+```
+
+The output showed various compressed system logs (like syslog.2.gz, kern.log.3.gz, dpkg.log.2.gz). It also showed some Permission denied errors for restricted system folders, which is normal for a regular user.
+
+#### Step 2: Simulating the Command with echo
+
+Before executing the actual deletion, I piped the results into xargs echo sudo rm to preview the exact command that would be constructed:
+
+```bash
+find /var/log/ -name "*.gz" | xargs echo sudo rm
+```
+
+This safely displayed sudo rm followed by a single long line containing all the paths to the .gz files separated by spaces. This confirmed that xargs was grouping the arguments correctly.
+
+#### Step 3: Execution and Final Verification
+
+Once I verified the list of files was correct, I removed the echo and executed the real cleanup:
+
+```bash
+find /var/log/ -name "*.gz" | xargs sudo rm
+```
+To make sure that absolutely all files were gone—even inside the restricted directories—I did a final check using sudo find:
+
+```bash
+sudo find /var/log/ -name "*.gz"
+```
+
+The command returned absolutely nothing, confirming that every single compressed log file was successfully and safely removed from the system.
