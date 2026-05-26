@@ -147,7 +147,7 @@ I could use:
 awk '{print $1}'
 ```
 
-When I tested both, they actually gave me the exact same result! But under the hood, there is a big difference. The command cut -d' ' -f1 cuts everything after the first space. It worked here only because the usernames are at the very beginning of the line. If there were multiple spaces between columns (like before the PID or %CPU columns to keep the table aligned), cut would break and return empty lines. On the other hand, awk automatically handles any number of spaces, making it much more reliable for this kind of task.
+When I tested both, they actually gave me the exact same result. But under the hood, there is a big difference. The command cut -d' ' -f1 cuts everything after the first space. It worked here only because the usernames are at the very beginning of the line. If there were multiple spaces between columns (like before the PID or %CPU columns to keep the table aligned), cut would break and return empty lines. On the other hand, awk automatically handles any number of spaces, making it much more reliable for this kind of task.
 
 ---
 
