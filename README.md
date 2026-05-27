@@ -48,7 +48,9 @@ chmod +x scripts/setup.sh
 
 
 ```text
-├── docs                      # Theoretical documentation of the project 
+├── docs                      # Theoretical documentation of the project
+│   ├── 03-linux-labs.md       # Homework exercises lesson 2
+│   ├── 04-linux-labs.md       # Homework exercises lesson 3 
 │   ├── architecture.md        # DevOps Philosophy
 │   ├── filesystem-notes.md    # Filesystem exploration notes
 │   ├── metrics.md             # DORA Metrics definitions
