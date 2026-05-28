@@ -99,3 +99,110 @@ Swap:          8.0Gi          0B       8.0Gi
 My system has a total of 31 GiB of RAM. Currently, 4.4 GiB is being used, leaving 26 GiB available for new processes and applications. The Swap space is completely untouched (0B used out of 8.0 GiB).
 
 ---
+
+## 4. Background process termination
+
+This exercise focuses on running a prepared script in the background, locating its process ID, and terminating it using the `kill` command.
+
+The script provided for this task:
+
+`bash -c 'i=0; while true; do echo $i >> ~/counter.log; i=$((i+1)); sleep 1; done' &`
+
+### Script Breakdown:
+* `i=0` initializes a counter variable named `i`.
+* `while true` sets up an infinite loop that constantly executes the code blocks inside.
+* `echo $i >> ~/counter.log` redirects and appends the current value of `$i` into the `counter.log` file inside the home directory.
+* `i=$((i+1))` increments the counter variable by one during each iteration.
+* `sleep 1` adds a one-second delay between loop cycles.
+* The trailing ampersand (`&`) sends the entire execution to the background, allowing the terminal to stay interactive while immediately returning the job number and its PID.
+
+I executed this script in my local terminal:
+
+Output:
+
+```bash
+sane@power-sane:~$ bash -c 'i=0; while true; do echo $i >> ~/counter.log; i=$((i+1)); sleep 1; done' &
+[1] 153814
+```
+The system confirmed the process was running under background job [1] with PID 153814. To verify if the background loop was actively writing data, I used ps aux filtered by grep:
+
+Output:
+
+```bash
+sane@power-sane:~$ ps aux | grep counter
+sane      153814  0.0  0.0  18616  3600 pts/3    S    10:25   0:00 bash -c i=0; while true; do echo $i >> ~/counter.log; i=$((i+1)); sleep 1; done
+sane      154175  0.0  0.0  17820  2328 pts/3    S+   10:27   0:00 grep --color=auto counter
+```
+
+As the output indicates, the process was actively running with the S (Interruptible sleep) status.
+
+The next requirement was to stop the script using the kill command targeted at its specific PID, followed by another status check:
+
+```bash
+sane@power-sane:~$ kill 153814
+sane@power-sane:~$ ps aux | grep counter
+sane      154532  0.0  0.0  17820  2332 pts/3    S+   10:29   0:00 grep --color=auto counter
+[1]+  Terminated              bash -c 'i=0; while true; do echo $i >> ~/counter.log; i=$((i+1)); sleep 1; done'
+```
+
+The terminal explicitly printed a Terminated status confirmation, meaning the background process was successfully stopped. Finally, I inspected the generated log file using cat to ensure the loop ran properly before being killed:
+
+Output:
+
+```bash
+sane@power-sane:~$ cat ~/counter.log
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+```
+
+## 5. Filtering Logs
+
+Next exercise is focused on journalctl to look up at all kernel messages from today, which has priority warning or higher.
+
+There was no more given information in the exercise so I searched for the possible options to use it.
+
+At first place I checked `man journalctl` command and I saw a syntax 
+`journalctl [OPTIONS...] [MATCHES...]
+
+but then I was looking for flags how to get kernel messegaes and I found -k flag, also I found --since and there is an second to --since today, priority levels are under -p
+
+so I used command:
+
+`journalctl -k --since today -p warning`
+
+```bash
+sane@power-sane:~$ journalctl -k --since today -p warning
+May 28 00:00:27 power-sane kernel: [UFW BLOCK] IN=enp0s31f6 OUT= MAC=01:00:5e:00:00:fb:52:d7:b>
+May 28 00:00:34 power-sane kernel: [UFW BLOCK] IN=enp0s31f6 OUT= MAC=01:00:5e:00:00:01:cc:00:f>
+May 28 00:01:14 power-sane kernel: [UFW BLOCK] IN=enp0s31f6 OUT= MAC=01:00:5e:00:00:01:cc:00:f>
+May 28 00:01:14 power-sane kernel: [UFW BLOCK] IN=wlp0s20f3 OUT= MAC=8c:f8:c5:de:c9:e8:cc:00:f>
+May 28 00:01:49 power-sane kernel: [UFW BLOCK] IN=enp0s31f6 OUT= MAC=01:00:5e:00:00:fb:52:d7:b>
+```
+The output was heavily flooded with identical [UFW BLOCK] entries. After scrolling down several screens, I finally spotted a different line:
+
+```bash
+May 28 12:49:02 power-sane kernel: kauditd_printk_skb: 2 callbacks suppressed 
+```
+
+To clear this firewall noise and make the log output readable, I looked for a way to exclude specific strings and found the grep -v option.
+
+I combined both commands using a pipe:
+
+```bash
+ane@power-sane:~$ journalctl -k --since today -p warning | grep -v "UFW BLOCK"
+May 28 12:49:02 power-sane kernel: kauditd_printk_skb: 2 callbacks suppressed
+```
+
+By inverting the match with grep -v, I successfully filtered out all firewall noise. This confirmed that, apart from routine UFW blocks, the kernel only logged a single warning today regarding suppressed callbacks.
+
+---
