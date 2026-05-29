@@ -332,3 +332,53 @@ The log entries confirm successful functionality, capturing data points precisel
 To prevent the service from continuously accumulating logs and consuming storage space over time, I deactivated and removed the components after completing the exercise
 
 ---
+
+## 2. Top 5 Processes by RAM Usage
+
+The objective of this exercise is to construct a single-line command pipeline using `ps`, `sort`, and `head` to identify the top 5 running processes consuming the most RAM, sorted in descending order.
+
+The command executed:
+```bash
+ps aux | sort -rn -k 4 | head -n 5
+```
+
+ps aux – Generates a comprehensive snapshot of all active processes running across all users in the system. The 4th column (%MEM) displays the percentage of physical memory used by each process.
+
+`sort -rn -k 4` - Sorts the incoming data stream based on specific criteria:
+
+`-k 4` - Specifies the sorting key to target the 4th column (%MEM).
+
+`-n` - Enforces a numeric sort (ensuring values like 10.0 are correctly evaluated as larger than 2.0, preventing alphabetical sorting issues).
+
+`-r` - Reverses the sorting order to descending (ranking from highest to lowest usage).
+
+`head -n 5` - Filters the final output stream to display only the first 5 lines, leaving us with the top resource hogs.
+
+Every process was an Firefox browser, I'm not going to put the output here because it was very long.
+
+---
+
+## 3. Log Investigation (SSH Service Analysis)
+
+The objective of this exercise is to investigate a reported user login issue that occurred yesterday between 15:00 and 16:00. 
+
+This requires filtering system logs specifically for the SSH daemon (`sshd`) within a precise time frame.
+
+Since today is Friday, May 29, 2026, "yesterday" refers to May 28, 2026. 
+
+The single-line command used to extract the relevant logs is:
+
+```bash
+journalctl -u ssh --since "2026-05-28 15:00:00" --until "2026-05-28 16:00:00"
+```
+
+Output:
+
+```bash
+sane@power-sane:~/first-devops-project/docs$ journalctl -u ssh --since "2026-05-28 15:00:00" --until "2026-05-28 16:00:00"
+-- No entries --
+```
+
+The command executed successfully but returned -- No entries --. While this was a simulated scenario for learning purposes, in a real production environment, this specific output provides critical diagnostic proof
+
+---
