@@ -206,3 +206,129 @@ May 28 12:49:02 power-sane kernel: kauditd_printk_skb: 2 callbacks suppressed
 By inverting the match with grep -v, I successfully filtered out all firewall noise. This confirmed that, apart from routine UFW blocks, the kernel only logged a single warning today regarding suppressed callbacks.
 
 ---
+
+# Challenge Exercises
+
+## 1. Own `systemd` Service
+
+This exercise focuses on creating, deploying, and managing a custom background service (daemon) using `systemd`. The task is divided into four distinct steps.
+
+### Step 1 - Preparing the Script
+
+The exercise provided a ready-made Bash script. Before executing anything, I investigated the `man tee` manual to understand how the data routing works. The standard syntax is:
+`tee [OPTION] [FILE]`
+
+The script code to be written looks like this:
+
+```bash
+#!/bin/bash
+while true; do
+  echo "$(date): $(uptime)" >> /var/log/system-load.log
+  sleep 10
+done
+EOF
+```
+To create this file without opening an interactive editor like nano, we use a clever combination of sudo tee and a Bash mechanism called a Here-Document (<< 'EOF').
+
+The << 'EOF' syntax tells the Bash shell: "Do not look for a file on the disk; treat everything typed in the terminal from this point forward as standard input until you encounter the specific word 'EOF' on a new line." While EOF (End of File) is the industry standard, any custom delimiter like STOP or END could be used. Using single quotes ('EOF') is crucial because it prevents Bash from prematurely evaluating variables like $(date) in the current shell session.
+
+The standard output of tee is redirected via > /dev/null (the system's virtual "black hole") to prevent the witten text from mirroring back and cluttering the terminal. Administrative privileges (sudo) are required because a regular user does not have permission to write directly into the system directory /usr/local/bin/.
+
+I executed the command and entered the script line by line:
+
+```Bash
+sane@power-sane:~$ sudo tee /usr/local/bin/load-monitor.sh > /dev/null << 'EOF'
+#!/bin/bash
+while true; do
+echo "$(date): $(uptime)" >> /var/log/system-load.log
+sleep 10
+done
+EOF
+```
+
+After finalizing the text block with EOF, the command executed successfully. I then granted executable permissions to the script using:
+sudo chmod +x /usr/local/bin/load-monitor.sh
+
+### Step 2 - Creating the systemd Service File
+
+The next step is to convert the standalone Bash script into a system service managed by systemd. Administrative configurations for local services are kept in the /etc/systemd/system/ directory.
+
+I generated the configuration file using the same tee and Here-Doc methodology:
+
+```Bash
+sudo tee /etc/systemd/system/load-monitor.service > /dev/null << 'EOF'
+> [Unit]
+> Description=System Load Monitor
+> [Service]
+> ExecStart=/usr/local/bin/load-monitor.sh
+> Restart=always
+> [Install]
+> WantedBy=multi-user.target
+> EOF
+```
+
+The service unit file structure is divided into three functional blocks:
+
+    [Unit] – Contains service metadata. The Description= field provides a human-readable name that appears in system logs and status checks.
+
+    [Service] – The core operational configuration. ExecStart= defines the absolute path to the binary or script that must be executed. Restart=always is a critical DevOps feature ensuring that if the script crashes, gets killed, or encounters an error, systemd will automatically restart it in the background.
+
+    [Install] – Defines the installation target for autostart. WantedBy=multi-user.target configures the service to boot automatically during the multi-user system state (a standard non-graphical environment where network services are up and users can log in).
+
+### Step 3 - Running the System Service
+
+To register and activate our new configuration, I executed the following sequence of control commands:
+
+```Bash
+sudo systemctl daemon-reload
+sudo systemctl start load-monitor
+sudo systemctl enable load-monitor
+sudo systemctl status load-monitor
+```
+
+`sudo systemctl daemon-reload`– When systemd initializes, it caches service configurations from the disk into RAM. Since a new .service file was manually created, this command forces systemd to rescan the directories and register the new unit.
+
+`sudo systemctl start load-monitor` – Manually triggers the service immediately, executing the script defined in ExecStart in the background.
+
+`sudo systemctl enable load-monitor` – Enables persistent autostart. This hooks the service into multi-user.target, ensuring the script initializes automatically whenever the system boots. The system confirms this action by creating a symlink:
+
+```Plaintext
+Created symlink /etc/systemd/system/multi-user.target.wants/load-monitor.service → /etc/systemd/system/load-monitor.service.
+```
+
+`sudo systemctl status load-monitor` – Generates a comprehensive runtime report for the target unit, indicating its health, PID, and active status.
+
+The status output confirmed a successful deployment:
+
+```Bash
+sane@power-sane:~$ sudo systemctl status load-monitor
+● load-monitor.service - System Load Monitor
+     Loaded: loaded (/etc/systemd/system/load-monitor.service; enabled; preset: enabled)
+     Active: active (running) since Fri 2026-05-29 14:16:30 CEST; 7s ago
+   Main PID: 273566 (load-monitor.sh)
+      Tasks: 2 (limit: 37875)
+     Memory: 1000.0K (peak: 1.5M)
+        CPU: 11ms
+     CGroup: /system.slice/load-monitor.service
+             ├─273566 /bin/bash /usr/local/bin/load-monitor.sh
+             └─273569 sleep 10
+
+May 29 14:16:30 power-sane systemd[1]: Started load-monitor.service - System Load Monitor.
+```
+
+### Step 4 - Verification
+
+To verify that the daemonized script is correctly executing its internal infinite loop, I let the system run for a short duration and checked the target destination file using cat:
+
+```Bash
+sane@power-sane:~$ cat /var/log/system-load.log
+Fri May 29 02:16:30 PM CEST 2026:  14:16:30 up 4 days, 19:02,  1 user,  load average: 0.98, 0.86, 0.73
+Fri May 29 02:16:40 PM CEST 2026:  14:16:40 up 4 days, 19:02,  1 user,  load average: 0.90, 0.85, 0.73
+Fri May 29 02:16:50 PM CEST 2026:  14:16:50 up 4 days, 19:02,  1 user,  load average: 0.76, 0.82, 0.72
+```
+
+The log entries confirm successful functionality, capturing data points precisely every 10 seconds. This lab provided a foundational understanding of writing custom daemons, a pattern I intend to adapt for managing my automated system maintenance tool, sysuu.sh.
+
+To prevent the service from continuously accumulating logs and consuming storage space over time, I deactivated and removed the components after completing the exercise
+
+---
