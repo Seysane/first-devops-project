@@ -55,6 +55,8 @@ chmod +x scripts/setup.sh
 │   ├── filesystem-notes.md    # Filesystem exploration notes
 │   ├── metrics.md             # DORA Metrics definitions
 │   └── tools.md               # List of installed tools
+├── my-server                 # Server directory
+│   └── index.html             # File to work with exercise 1 lesson 5
 ├── README.md
 ├── scripts                   # Scripts to automate configuration
 │   └── setup.sh               # Simple script installing tools used on course
