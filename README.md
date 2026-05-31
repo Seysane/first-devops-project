@@ -56,6 +56,7 @@ chmod +x scripts/setup.sh
 │   ├── metrics.md             # DORA Metrics definitions
 │   └── tools.md               # List of installed tools
 ├── my-server                 # Server directory
+│   ├── check_server.sh        # Automated server availabilit Bash script
 │   └── index.html             # File to work with exercise 1 lesson 5
 ├── README.md
 ├── scripts                   # Scripts to automate configuration
