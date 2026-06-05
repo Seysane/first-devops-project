@@ -181,3 +181,161 @@ dig example-nonexistent-12345.com
 | **`dig` Response Headers** | Returns status packet flag **`NOERROR`** with values populated inside the `ANSWER SECTION`. | Returns status packet flag **`NXDOMAIN`** (Non-Existent Domain); `ANSWER SECTION` remains empty. |
 | **`curl` Application Layer** | Executes TCP/TLS state handshakes; retrieves application layout markup code. | Execution terminates locally with error: `Could not resolve host`, preventing data packages from leaving the local host boundary. |
 
+---
+
+## 2. CORS Configuration and Testing
+
+To simulate a backend asset server, we navigate to the project directory and spin up Python's built-in single-threaded HTTP web server listening on port `8000`:
+
+### Task 1: Local HTTP Server Setup
+
+```bash
+sane@power-sane:~/first-devops-project$ mkdir my_project && cd my_project
+python3 -m http.server 8000
+```
+
+### Task 2: Cross-Origin Simulation (curl)
+
+From a separate terminal instance, we simulate a Preflight Request initiated by a web application hosted on a different origin (http://localhost:3000) attempting to access our port 8000 resource:
+
+```bash
+sane@power-sane:~/first-devops-project/my_project$ curl -X OPTIONS \
+  -H "Origin: http://localhost:3000" \
+  -H "Access-Control-Request-Method: GET" \
+  -v \
+  http://localhost:8000
+* Host localhost:8000 was resolved.
+* IPv6: ::1
+* IPv4: 127.0.0.1
+*   Trying [::1]:8000...
+* connect to ::1 port 8000 from ::1 port 51052 failed: Connection refused
+*   Trying 127.0.0.1:8000...
+* Connected to localhost (127.0.0.1) port 8000
+> OPTIONS / HTTP/1.1
+> Host: localhost:8000
+> User-Agent: curl/8.5.0
+> Accept: */*
+> Origin: http://localhost:3000
+> Access-Control-Request-Method: GET
+> 
+* HTTP 1.0, assume close after body
+< HTTP/1.0 501 Unsupported method ('OPTIONS')
+< Server: SimpleHTTP/0.6 Python/3.12.3
+< Date: Fri, 05 Jun 2026 08:35:01 GMT
+< Connection: close
+< Content-Type: text/html;charset=utf-8
+< Content-Length: 360
+< 
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Error response</title>
+    </head>
+    <body>
+        <h1>Error response</h1>
+        <p>Error code: 501</p>
+        <p>Message: Unsupported method ('OPTIONS').</p>
+        <p>Error code explanation: 501 - Server does not support this operation.</p>
+    </body>
+</html>
+* Closing connection
+```
+
+### Task 3: Results Analysis & Verification
+
+Based on the raw diagnostic network logs captured above, we can break down the server's behavioral response:
+
+#### 1. Are the CORS headers set in the response?
+
+No. The response headers completely lack any Access-Control-Allow-Origin, Access-Control-Allow-Methods, or Access-Control-Allow-Headers directives.
+
+#### 2. Does python3 -m http.server natively support CORS?
+
+No, absolutely not. In fact, the output proves that Python's default server utility (SimpleHTTP/0.6) does not even recognize the standard HTTP OPTIONS verb used for CORS preflight checks. It explicitly terminates the connection stack and returns an HTTP 501 Unsupported method ('OPTIONS') error payload.
+
+#### 3. Network Stack Observation:
+
+The log captures a Connection refused notice when trying to connect to [::1]:8000. This indicates that the Python process bound itself strictly to the local IPv4 loopback socket interface (127.0.0.53 / 127.0.0.1) and is completely unlistening on the IPv6 loopback channel.
+
+#### 4. What would you change to enable CORS capability?
+
+To support CORS natively without switching to a heavy external framework, we can override Python's SimpleHTTPRequestHandler via a minimal inline custom script.
+
+We can create a wrapper script named cors_server.py:
+
+```python
+from http.server import HTTPServer, SimpleHTTPRequestHandler
+
+class CORSRequestHandler(SimpleHTTPRequestHandler):
+    def end_headers(self):
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type')
+        SimpleHTTPRequestHandler.end_headers(self)
+
+    def do_OPTIONS(self):
+        self.send_response(200, "OK")
+        self.end_headers()
+
+HTTPServer(('127.0.0.1', 8000), CORSRequestHandler).serve_forever()
+```
+
+The script explicitly defines a do_OPTIONS method to intercept preflight calls, override the default 501 error response, and gracefully return an HTTP 200 OK along with the safe cross-origin access tokens.
+
+#### Verification of the Solution (Fix Output)
+
+When executing the same curl preflight check against our custom cors_server.py, the connection completes successfully, bypassing the previous 501 limitation and returning the mandatory validation tokens:
+
+```bash
+sane@power-sane:~/first-devops-project/my_project$ curl -X OPTIONS \
+  -H "Origin: http://localhost:3000" \
+  -H "Access-Control-Request-Method: GET" \
+  -v \
+  http://localhost:8000
+* Host localhost:8000 was resolved.
+* IPv6: ::1
+* IPv4: 127.0.0.1
+* Trying [::1]:8000...
+* connect to ::1 port 8000 from ::1 port 42782 failed: Connection refused
+* Trying 127.0.0.1:8000...
+* Connected to localhost (127.0.0.1) port 8000
+> OPTIONS / HTTP/1.1
+> Host: localhost:8000
+> User-Agent: curl/8.5.0
+> Accept: */*
+> Origin: http://localhost:3000
+> Access-Control-Request-Method: GET
+>  
+* HTTP 1.0, assume close after body
+< HTTP/1.0 200 OK
+< Server: SimpleHTTP/0.6 Python/3.12.3
+< Date: Fri, 05 Jun 2026 08:49:20 GMT
+< Access-Control-Allow-Origin: *
+< Access-Control-Allow-Methods: GET, OPTIONS
+< Access-Control-Allow-Headers: X-Requested-With, Content-Type
+<  
+* Closing connection
+```
+
+### Task 4: Core Documentation & Theoretical Concepts
+
+To summarize our findings and satisfy the architectural documentation requirements, we analyze the core security mechanics of CORS below:
+
+#### 1. What is CORS?
+**CORS (Cross-Origin Resource Sharing)** is a browser-enforced security mechanism that uses specific HTTP headers to grant a web application running at one origin permission to access selected resources located on a completely different server network. An origin is explicitly defined as a strict combination of **Protocol + Domain + Port** (for instance, `http://localhost:3000` vs `http://localhost:8000` are treated as entirely distinct origins).
+
+
+
+#### 2. When is CORS needed?
+CORS permissions are triggered automatically by client-side browser engines whenever an asynchronous script (utilizing modern web APIs like `fetch()` or `XMLHttpRequest`/`Axios`) dispatches an HTTP request to an external destination whose origin does not match the scheme, host, or port of the URL currently hosting the active web page execution context.
+
+#### 3. Why do browsers strictly enforce CORS?
+Browsers enforce CORS to actively uphold the **Same-Origin Policy (SOP)** protection standard. Without CORS enforcement, a malicious script running inside one browser tab could seamlessly abuse background session states (such as active authentication cookies or session storage tokens) to read sensitive layout payloads or trigger unauthorized data operations on completely unrelated third-party web portals (e.g., harvesting secure API data from an open banking tab while a user browses an untrusted layout forum). CORS ensures that servers must explicitly opt-in and white-list external source origins via headers like `Access-Control-Allow-Origin` before a client browser is legally allowed to expose the underlying raw HTTP payload data to the script layer.
+
+### Expected Deliverables Checklist Verification
+- [x] **Test HTTP Servers configured:** Deployed both standard Python static utility and overridden CORS handler.
+- [x] **CORS Data Metrics collected:** Captured raw 501 breakdown header maps and compared them directly against healthy 200 OK cross-origin responses.
+- [x] **Technical Documentation formulated:** Conceptual boundaries regarding SOP and security policies clearly defined.
+
+---
