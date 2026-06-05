@@ -57,6 +57,8 @@ chmod +x scripts/setup.sh
 │   ├── filesystem-notes.md    # Filesystem exploration notes
 │   ├── metrics.md             # DORA Metrics definitions
 │   └── tools.md               # List of installed tools
+├── my_project                # Exercise directory for lesson 6
+│   ├── cors-server.py         # Custom Python script overriding default handlers to inject CORS headers
 ├── my-server                 # Server directory
 │   ├── check_server.sh        # Automated server availabilit Bash script
 │   └── index.html             # File to work with exercise 1 lesson 5
