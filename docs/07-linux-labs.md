@@ -169,6 +169,17 @@ Cluster Integration Status
 
 All guest virtual machines now share a unified, cross-platform network workspace hosted by the Ubuntu workstation. Read and write operations sync instantly across the entire mesh.
 
+### 5. Environment State Preservation (Snapshots)
+
+To guarantee a clean fallback state before conducting heavy system tests or resource deployments, all three virtual environments were gracefully shut down (sudo poweroff) and cold system snapshots were generated within VirtualBox.
+
+* **Snapshot Names:** 
+   * Debian: `Debian_Mesh_Network_and_NFS_Configured`
+    * Rocky Linux: `Rocky_Mesh_Network_and_NFS_Configured`
+    * FreeBSD: `FreeBSD_Mesh_Network_and_NFS_Configured`
+
+Full mesh SSH operational, static IP allocations permanent, unified cross-platform shared storage workspace configured via NFS server user mapping. Baseline state secured.
+
 ## Verification & Proof of Work
 
 ### 1. Network Connectivity Verification (Host to Zoo)
@@ -211,6 +222,29 @@ total 0
 -rw-r--r-- 1 sane sane 0 Jun  8 23:02 rocky_final_test.txt
 ```
 
----
+### 3. Storage Performance Baseline (NFS Write Benchmarks)
+To complete the exercise requirements, sequential write performance tests were conducted across all three guest operating systems using the `dd` utility (writing a 1 GB file of contiguous zeros directly to the NFS mountpoint):
 
+**Debian (Direct I/O):**
+```bash
+sanedeb@Deb:~$ dd if=/dev/zero of=/media/sf_vbox_shared/speedtest_debian.img bs=1M count=1000 oflag=direct
+1048576000 bytes (1.0 GB, 1000 MiB) copied, 2.00597 s, 523 MB/s
+```
 
+**Rocky Linux (Kernel-Optimized Direct I/O):**
+
+```bash
+[sanerocky@Rocky ~]$ dd if=/dev/zero of=/media/sf_vbox_shared/speedtest_rocky.img bs=1M count=1000 oflag=direct
+1000+0 records in
+1000+0 records out
+1048576000 bytes (1.0 GB, 1000 MiB) copied, 0.690958 s, 1.5 GB/s
+```
+
+**FreeBSD (Buffered I/O Syntax):**
+
+```bash
+freebsd@freebsd:~ $ dd if=/dev/zero of=/mnt/vbox_shared/speedtest_freebsd.img bs=1m count=1000
+1048576000 bytes transferred in 1.488090 secs (704645700 bytes/sec)
+```
+
+The lab infrastructure demonstrates excellent storage throughput. The differences in speeds highlight how each kernel family (Debian/Linux, RHEL/Enterprise, and BSD/Unix) handles virtual network sockets and synchronous/buffered I/O sub-systems over the VirtualBox internal memory bridge.
