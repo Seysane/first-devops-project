@@ -248,3 +248,110 @@ freebsd@freebsd:~ $ dd if=/dev/zero of=/mnt/vbox_shared/speedtest_freebsd.img bs
 ```
 
 The lab infrastructure demonstrates excellent storage throughput. The differences in speeds highlight how each kernel family (Debian/Linux, RHEL/Enterprise, and BSD/Unix) handles virtual network sockets and synchronous/buffered I/O sub-systems over the VirtualBox internal memory bridge.
+
+## Exercise 2: "Physical-to-Virtual (P2V) Server Migration"
+
+The objective of this exercise is to simulate a Physical-to-Virtual (P2V) enterprise migration. Instead of standard full-disk block cloning (which carries obsolete hardware drivers and wastes storage space), a modern DevOps system-and-service level migration strategy was utilized.
+
+### Project Requirements:
+1. Select a physical host workstation or production server.
+2. Initialize an empty virtual target clone replicating the host OS environment.
+3. Establish network connectivity and migrate active background services/configurations.
+4. Verify deployment integrity and ensure continuous service functionality.
+
+### Selected Migration Targets:
+* **Source System (Physical):** Host Workstation (Dell Laptop running native Ubuntu Desktop, User: `sane`)
+* **Target System (Virtual VM):** VirtualBox Instance (Clean Ubuntu Desktop 26.04 LTS deployment, User: `saneubuntu`, Hostname: `UbuntuDesktop`)
+
+### Network Provisioning (Target VM):
+To enable direct peer-to-peer communication between the physical host and the virtual clone, the VM network interface was decoupled from the default VirtualBox NAT and switched to a **Bridged Adapter** bound to the workstation's active network card.
+
+---
+
+## Implementation Progress
+
+### 1. Environment Replication & OS Provisioning
+* Created a new virtual instance matching the architecture of the production machine. 
+* Allocated **4 GB RAM**, **2 vCPU cores**, and enabled maximum **Video Memory (128 MB)** along with 3D Graphics Acceleration to prevent desktop interface lag.
+* To achieve automatic display scaling, clipboard sharing, and direct host integration, standard guest utilities were provisioned inside the VM:
+
+```bash
+sudo apt update && sudo apt install virtualbox-guest-dkms virtualbox-guest-x11 -y
+```
+### 2. Network Integration & SSH Server Deployment
+
+By default, Ubuntu Desktop explicitly drops incoming port 22 connections. To unlock the administration path, the SSH daemon was manually deployed and activated on the target VM:
+
+```Bash
+sudo apt install openssh-server -y
+sudo systemctl enable --now ssh
+
+Checked the local DHCP lease using ip a inside the guest environment. The VM successfully obtained a dedicated home subnet address: 192.168.1.89.
+```
+### 3. Service Identity & Configuration Migration
+
+The goal was to migrate the sysuu service (automated system maintenance system) from the physical laptop to the newly established wirtual instance.
+
+From the Physical Laptop (sane@power-sane), the shell executable script and the native systemd automation units (Service and Timer) were pushed directly over the network to the clone's remote directory:
+
+```Bash
+sane@power-sane:~$ scp /usr/local/bin/sysuu saneubuntu@192.168.1.89:~/
+sane@power-sane:~$ scp /etc/systemd/system/sysuu.service saneubuntu@192.168.1.89:~/
+sane@power-sane:~$ scp /etc/systemd/system/sysuu.timer saneubuntu@192.168.1.89:~/
+```
+
+### 4. Remote Service Activation & Deployment
+
+Logged into the virtual machine via SSH to re-link binaries, correct structural paths, and ingest the zmigrated service units into the guest engine:
+
+```Bash
+ssh saneubuntu@192.168.1.89
+
+# Re-positioning and securing executable file permissions
+sudo mv ~/sysuu /usr/local/bin/sysuu
+sudo chmod +x /usr/local/bin/sysuu
+
+# Relocating systemd unit blocks to system tree
+sudo mv ~/sysuu.service /etc/systemd/system/
+sudo mv ~/sysuu.timer /etc/systemd/system/
+```
+
+## Reloading daemon configuration and triggering automation schedules
+sudo systemctl daemon-reload
+sudo systemctl enable --now sysuu.timer
+
+Verification & Proof of Work
+#### 1. Secure Shell Access Log
+
+Terminal output confirming a successful, encrypted remote administration session initiated from the physical workstation directly to the virtual clone:
+
+```Bash
+sane@power-sane:~$ ssh saneubuntu@192.168.1.89
+saneubuntu@192.168.1.89's password: 
+Welcome to Ubuntu 26.04 LTS (GNU/Linux 7.0.0-22-generic x86_64)
+
+ * Documentation:  [https://docs.ubuntu.com](https://docs.ubuntu.com)
+ * Management:     [https://landscape.canonical.com](https://landscape.canonical.com)
+ * Support:        [https://ubuntu.com/pro](https://ubuntu.com/pro)
+
+Last login: Tue Jun  9 15:12:57 2026 from 192.168.1.80
+saneubuntu@UbuntuDesktop:~$ 
+```
+
+#### 2. Systemd Automation Engine Verification
+
+Querying the operational status of the newly zmigrated maintenance timer confirms the service identity transfer was executed flawlessly. The automation schedule is enabled, running, and active inside the VM:
+
+```Bash
+saneubuntu@UbuntuDesktop:~$ systemctl status sysuu.timer
+● sysuu.timer - Run sysuu script automatically every 12 hours
+     Loaded: loaded (/etc/systemd/system/sysuu.timer; enabled; preset: enabled)
+     Active: active (waiting) since Tue 2026-06-09 15:18:01 UTC; 4s ago
+ Invocation: 35b6563b84364132835ab9878a022ef9
+    Trigger: Wed 2026-06-10 00:00:00 UTC; 8h left
+   Triggers: ● sysuu.service
+
+Jun 09 15:18:01 UbuntuDesktop systemd[1]: Started sysuu.timer - Run sysuu script automatic>
+```
+
+The systemd cron-alternative tracker has officially registered the background service hooks. It is idling cleanly inside the virtual environment (active (waiting)), showing that the physical system automation has successfully transitioned to the virtual infrastructure clone.
