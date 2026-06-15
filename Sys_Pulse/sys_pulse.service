@@ -1,0 +1,11 @@
+[Unit]
+Description=SysPulse - System Resources and Services Monitor
+After=network.target
+
+[Service]
+Type=oneshot
+User=sane
+ExecStart=/bin/bash /home/sane/first-devops-project/Sys_Pulse/monitor.sh
+
+[Install]
+WantedBy=multi-user.target

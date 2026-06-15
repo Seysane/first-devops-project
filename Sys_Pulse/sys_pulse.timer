@@ -1,0 +1,10 @@
+[Unit]
+Description=Run SysPulse monitor every minute
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=1min
+Unit=sys_pulse.service
+
+[Install]
+WantedBy=timers.target
