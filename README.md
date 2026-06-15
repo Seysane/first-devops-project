@@ -67,6 +67,16 @@ chmod +x scripts/setup.sh
 ├── scripts                   # Scripts to automate configuration
 │   └── setup.sh               # Simple script installing tools used on course
 ├── src                        # Source code of the application 
+├── Sys_Pulse
+│   ├── monitor.sh
+│   ├── README.md
+│   ├── sys_pulse.conf
+│   ├── syspulse_logs
+│   │   └── syspulse_alerts.log
+│   ├── syspulse_metrics
+│   │   └── syspulse_metrics.csv
+│   ├── sys_pulse.service
+│   └── sys_pulse.timer
 ├── tests                      # Infrastructure and code testing
 └── VM_Guardian               # Automated VM Backup System. Homework esercise lesson 8 
     ├── README.md              # Information about project for lesson 8 exercise 1
