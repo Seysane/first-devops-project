@@ -1,0 +1,10 @@
+[Unit]
+Description=Run VM Guardian everyday at midnight
+
+[Timer]
+OnCalendar=*-*-* 00:00:00
+Persistent=true
+Unit=vm_guardian.service
+
+[Install]
+WantedBy=timers.target
