@@ -67,7 +67,13 @@ chmod +x scripts/setup.sh
 ├── scripts                   # Scripts to automate configuration
 │   └── setup.sh               # Simple script installing tools used on course
 ├── src                        # Source code of the application 
-└── tests                      # Infrastructure and code testing
+├── tests                      # Infrastructure and code testing
+└── VM_Guardian               # Automated VM Backup System. Homework esercise lesson 8 
+    ├── README.md              # Information about project for lesson 8 exercise 1
+    ├── vm_guardian.conf       # Configuration file for vmlog_guardian.sh script
+    ├── vm_guardian.service    # Systemd .service file
+    ├── vm_guardian.timer      # Systemd .timer file
+    └── vmlog_guardian.sh      # Main script for VM_Guardian
 ```
 
 
