@@ -53,6 +53,7 @@ chmod +x scripts/setup.sh
 │   ├── 04-linux-labs.md       # Homework exercises lesson 4   
 │   ├── 05-linux-labs.md       # Homework exercises lesson 5
 │   ├── 06-linux-labs.md       # Homework exercises lesson 6
+│   ├── 07-linux-labs.md       # Homework exercises lesson 7
 │   ├── architecture.md        # DevOps Philosophy
 │   ├── filesystem-notes.md    # Filesystem exploration notes
 │   ├── metrics.md             # DORA Metrics definitions
