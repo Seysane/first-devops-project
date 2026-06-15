@@ -1,0 +1,12 @@
+[Unit]
+Description=VM Guardian - Automatic VM Log Backup
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=sane
+ExecStart=/bin/bash /home/sane/vbox_shared/VM_Guardian/vmlog_guardian.sh
+
+[Install]
+WantedBy=multi-user.target
