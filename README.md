@@ -4,8 +4,6 @@
 
 ## Table of Contents
 - [About](#about)
-- [Requirements](#requirements)
-- [Installation](#installation)
 - [Project Structure](#project-structure)
 
 <h2 id="about">About <span style="float:right">🧠</span></h2>
@@ -13,36 +11,6 @@
 This repository serves as my personal journal for learning DevOps practices.  
 It was created to organize the structure, configuration, and tool automation that
 I am mastering throughout the course.
-
-<h2 id="requirements">Requirements <span style="float:right">📌</span></h2>
-
-Before running anything, ensure your system has:
-**OS:** Linux (Ubuntu recommended) or macOS
-**Tools:** Git (required to clone this repository), Bash
-
-<h2 id="installation">Installation <span style="float:right">🛠️</span></h2>
-
-### Milestone 1: Environment & Core Tools Setup (Lesson 1)
-**Target Script:** `scripts/setup.sh`
-**What it does:** Automatically installs the core CLI tools, utilities and dependencies used throughout this course.
-**How to run it:**
-```bash
-# Clone the repository using Git
-git clone https://github.com/Seysane/first-devops-project
-
-# Navigate to the project folder
-cd first-devops-project
-
-# Run the initialization
-sudo apt update
-
-# Grant permissions to the setup.sh file
-chmod +x scripts/setup.sh
-
-# Run script
-./scripts/setup.sh
-
-```
 
 <h2 id="project-structure">Project Structure<span style="float:right">📂</span></h2>
 
