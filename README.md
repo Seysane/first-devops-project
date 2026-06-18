@@ -24,6 +24,7 @@ I am mastering throughout the course.
 │   ├── 07-linux-labs.md           # Homework exercises lesson 7
 │   ├── architecture.md            # DevOps Philosophy
 │   ├── filesystem-notes.md        # Filesystem exploration notes
+│   ├── GIT_WORKFLOW.md            # Homework Exercises lesson 10
 │   ├── metrics.md                 # DORA Metrics definitions
 │   └── tools.md                   # List of installed tools
 ├── my_project                   # Exercise directory for lesson 6
