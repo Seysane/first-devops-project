@@ -1,0 +1,33 @@
+==================================================
+                LOG ANALYSIS REPORT               
+==================================================
+Analysis Date:     2026-06-23 17:34:59
+Analyzed File:     /var/log/auth.log
+Search Pattern:    sane
+Execution Time:    0 second(s)
+--------------------------------------------------
+General Statistics:
+Total matching lines found: 1121
+--------------------------------------------------
+First 10 matching lines:
+2026-06-22T11:02:17.041587+02:00 power-sane gdm-password]: gkr-pam: unlocked login keyring
+2026-06-22T11:05:01.667106+02:00 power-sane CRON[27689]: pam_unix(cron:session): session opened for user root(uid=0) by root(uid=0)
+2026-06-22T11:05:01.671078+02:00 power-sane CRON[27689]: pam_unix(cron:session): session closed for user root
+2026-06-22T11:15:01.681727+02:00 power-sane CRON[28167]: pam_unix(cron:session): session opened for user root(uid=0) by root(uid=0)
+2026-06-22T11:15:01.685708+02:00 power-sane CRON[28167]: pam_unix(cron:session): session closed for user root
+2026-06-22T11:17:01.692202+02:00 power-sane CRON[28269]: pam_unix(cron:session): session opened for user root(uid=0) by root(uid=0)
+2026-06-22T11:17:01.695586+02:00 power-sane CRON[28269]: pam_unix(cron:session): session closed for user root
+2026-06-22T11:25:01.706657+02:00 power-sane CRON[28607]: pam_unix(cron:session): session opened for user root(uid=0) by root(uid=0)
+2026-06-22T11:25:01.710544+02:00 power-sane CRON[28607]: pam_unix(cron:session): session closed for user root
+2026-06-22T11:30:01.721072+02:00 power-sane CRON[28690]: pam_unix(cron:session): session opened for user root(uid=0) by root(uid=0)
+--------------------------------------------------
+Top 5 Most Frequent Words in Matches:
+     18 session
+     14 root
+     11 02
+     10 uid
+     10 sane
+--------------------------------------------------
+IP Address Statistics (Top Hits):
+No IP addresses found in matching lines.
+==================================================
