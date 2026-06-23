@@ -1,5 +1,16 @@
 #!/bin/bash
 
+log_action() {
+    local MESSAGE=$1
+    if [ -n "$PROJECT_NAME" ]; then
+        mkdir -p "$PROJECT_NAME" 2>/dev/null
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] $MESSAGE" >> "$PROJECT_NAME/setup.log"
+    else
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] $MESSAGE" >> "setup.log"
+    fi
+    echo "$MESSAGE"
+}
+
 if [ "$1" == "--help" ]; then
     echo "Usage: ./project_setup.sh <project_name> <language> [directories]"
     echo ""
@@ -15,27 +26,17 @@ if [ $# -eq 0 ]; then
     read -p "Enter language (python/js/go): " LANGUAGE
     read -p "Enter directories (comma separated, e.g. src,tests or leave empty): " DIRECTORY
 else
-    # Jeśli podał argumenty normalnie, przypisujemy je po staremu
     PROJECT_NAME=$1
     LANGUAGE=$2
     DIRECTORY=$3
 fi
 
 if [ -z "$PROJECT_NAME" ] || [ -z "$LANGUAGE" ]; then
-    echo "Error: Missing required arguments."
+    log_action "Error: Missing required arguments."
     echo "Usage: ./project_setup.sh <project_name> <language> [directories]"
     exit 1
 
     fi
-
-log_action() {
-    local MESSAGE=$1
-    # Logujemy do pliku tylko wtedy, gdy katalog projektu już istnieje
-    if [ -d "$PROJECT_NAME" ]; then
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] $MESSAGE" >> "$PROJECT_NAME/setup.log"
-    fi
-    echo "$MESSAGE"
-}
 
 SUPPORTED_LANGUAGES=("python" "js" "go")
 VALID_LANGUAGE=false
@@ -48,13 +49,13 @@ for LANG in "${SUPPORTED_LANGUAGES[@]}"; do
 done
 
 if [ "$VALID_LANGUAGE" == false ]; then
-    echo "Error: Language '$LANGUAGE' is unsupported."
+    log_action "Error: Language '$LANGUAGE' is unsupported."
     echo "Please choose one of: ${SUPPORTED_LANGUAGES[*]}"
     exit 1
 fi
 
 if [ -d "$PROJECT_NAME" ]; then
-    echo "Error: Directory '$PROJECT_NAME' already exists!"
+    log_action "Error: Directory '$PROJECT_NAME' already exists!"
     exit 1
 fi
 
