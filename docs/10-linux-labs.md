@@ -25,17 +25,6 @@ CONFLICT (content): Merge conflict in readme.txt
 Automatic merge failed; fix conflicts and then commit the result.
 ```
 
-## 2. Triggering the Conflict
-
-Being on the `master` branch, I ran the merge command to pull in the changes from `branch-A`:
-
-```bash
-sane@power-sane:~/first-devops-project$ git merge branch-A
-Auto-merging readme.txt
-CONFLICT (content): Merge conflict in readme.txt
-Automatic merge failed; fix conflicts and then commit the result.
-```
-
 As expected, Git halted the automatic merge process because the algorithmic engine encountered overlapping changes on Line 2 and did not know which version should take priority.
 
 3. Analyzing Conflict Markers
