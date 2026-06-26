@@ -87,10 +87,8 @@ I am mastering throughout the course.
 │               ├── pictures                 # Test images directory
 │               ├── setup.log                # Setup process log
 │               └── video                    # Video test directory
-├── README.md                        # Main README.md of first-devops-project course
-├── scripts                          # Scripts used for automation and configuration
-├── src                              # Source code of the application
-└── tests                            # Infrastructure and code testing
+└── README.md                        # Main README.md of first-devops-project course
+
 ```
 
 
