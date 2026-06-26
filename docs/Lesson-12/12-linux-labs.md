@@ -93,13 +93,14 @@ sane@power-sane:~/first-devops-project/docs/Lesson-12$ bash ./service_ctl.sh sta
 
 The script should have the commands:
 
-`-s` source
-`-d` destination
-`-v` verbose
+`-s` source directory
+`-d` destination directory
+`-v` verbose command
+`-h` help command
 
 ### Script
 
-
+This script just takes backup from source directory to destination directory and it uses tar.gz to compress backup file.
 
 ### Output
 
