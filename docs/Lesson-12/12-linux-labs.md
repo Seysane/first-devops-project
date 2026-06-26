@@ -84,3 +84,42 @@ Starting
 sane@power-sane:~/first-devops-project/docs/Lesson-12$ bash ./service_ctl.sh status
 2026-06-26 15:08 - INFO Service running
 ```
+
+---
+
+### Exercise 2 - Creating backup files copy with options
+
+#### Homework requirements
+
+The script should have the commands:
+
+`-s` source
+`-d` destination
+`-v` verbose
+
+### Script
+
+
+
+### Output
+
+```bash
+sane@power-sane:~/first-devops-project/docs/Lesson-12$ ./tar_backup.sh -s /tmp/test_source -d /tmp/test_backup -v
+2026-06-26 17:50 - INFO Backup created: /tmp/test_backup/backup_20260626_175007.tar.gz
+2026-06-26 17:50 - INFO Verbose - ON
+-rw-rw-r-- 1 sane sane 164 Jun 26 17:50 /tmp/test_backup/backup_20260626_175007.tar.gz
+2026-06-26 17:50 - INFO Temporary files deleted.
+sane@power-sane:~/first-devops-project/docs/Lesson-12$ ./tar_backup.sh -s /tmp/test_source -d /tmp/test_backup
+2026-06-26 17:50 - INFO Backup created: /tmp/test_backup/backup_20260626_175012.tar.gz
+2026-06-26 17:50 - INFO Temporary files deleted.
+sane@power-sane:~/first-devops-project/docs/Lesson-12$ ls -la /tmp/test_backup/
+total 32
+drwxrwxr-x  2 sane sane 4096 Jun 26 17:50 .
+drwxrwxrwt 33 root root 4096 Jun 26 17:50 ..
+-rw-rw-r--  1 sane sane  160 Jun 26 17:35 backup_20260626_173528.tar.gz
+-rw-rw-r--  1 sane sane  164 Jun 26 17:36 backup_20260626_173635.tar.gz
+-rw-rw-r--  1 sane sane  164 Jun 26 17:38 backup_20260626_173812.tar.gz
+-rw-rw-r--  1 sane sane  164 Jun 26 17:38 backup_20260626_173826.tar.gz
+-rw-rw-r--  1 sane sane  164 Jun 26 17:50 backup_20260626_175007.tar.gz
+-rw-rw-r--  1 sane sane  164 Jun 26 17:50 backup_20260626_175012.tar.gz
+```
