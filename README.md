@@ -75,18 +75,25 @@ I am mastering throughout the course.
 │   │   ├── 10-linux-labs.md             # Linux laboratory exercises lesson 10
 │   │   ├── COLLABORATION.md             # Team collaboration notes
 │   │   └── GIT_WORKFLOW.md              # Git workflow documentation
-│   └── Lesson-11                      # Linux automation project
-│       └── project-setup                # Project setup exercise
-│           ├── 11-linux-labs.md           # Linux laboratory exercises lesson 11
-│           ├── log_analyzer.sh            # Log analysis automation script
-│           ├── project_setup.sh           # Project initialization script
-│           ├── report.txt                 # Generated analysis report
-│           └── test                       # Test environment
-│               ├── camera                   # Camera test directory
-│               ├── main.py                  # Test Python application
-│               ├── pictures                 # Test images directory
-│               ├── setup.log                # Setup process log
-│               └── video                    # Video test directory
+│   ├── Lesson-11                      # Linux automation project
+│   │   └── project-setup                # Project setup exercise
+│   │       ├── 11-linux-labs.md           # Linux laboratory exercises lesson 11
+│   │       ├── log_analyzer.sh            # Log analysis automation script
+│   │       ├── project_setup.sh           # Project initialization script
+│   │       ├── report.txt                 # Generated analysis report
+│   │       └── test                       # Test environment
+│   │           ├── camera                   # Camera test directory
+│   │           ├── main.py                  # Test Python application
+│   │           ├── pictures                 # Test images directory
+│   │           ├── setup.log                # Setup process log
+│   │           └── video                    # Video test directory
+│   ├── Lesson-12                      # Script manager and backups with options
+│   │   ├── 12-linux-labs.md               # Linux laboratory exercises lesson 12
+│   │   ├── service_ctl.sh                 # Service script manager
+│   │   └── tar_backup.sh                  # Backup script with options
+│   └── Lesson-13                      # Nginx & Proxy
+│       ├── NGINX_VHOSTS.md                # Nginx - multiple vhosts
+│       └── NGINX_REVERSE_PROXY.md         # Nginx reverse proxy with Apatche2
 └── README.md                        # Main README.md of first-devops-project course
 
 ```
