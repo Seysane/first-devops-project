@@ -16,6 +16,7 @@ This architectural reference guide maps out the Git Flow branching strategy, tac
   feature/monitoring          +------------> [Add Code]  /               /
                               |                         /               /
   feature/logging             +------------------------> [Add Docs]----+
+```
 
 ## 2. Branch Governance Profiles & Operational Workflows
 
