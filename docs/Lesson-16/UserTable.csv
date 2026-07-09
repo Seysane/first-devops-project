@@ -1,0 +1,4 @@
+"id","username","email","password_hash","created_at"
+1,"jan_kowalski","jan@gmail.com","hash123","2026-07-08 22:57:10.195782"
+2,"maria_nowak","maria@gmail.com","hash456","2026-07-08 22:57:10.195782"
+3,"piotr_wisniewski","piotr@gmail.com","hash789","2026-07-08 22:57:10.195782"
