@@ -1,6 +1,8 @@
 "id","title","created_at","author","category","comment_count"
-1,"Mój pierwszy post o Linuxie","2026-07-09 21:21:02.907513","jan_kowalski","Technologia",2
-2,"Przepis na pizzę","2026-07-09 21:21:02.907513","maria_nowak","Gotowanie",1
-3,"Podróż do Japonii","2026-07-09 21:21:02.907513","jan_kowalski","Podróże",1
-4,"Najlepsze laptopy 2026","2026-07-09 21:21:02.907513","piotr_wisniewski","Technologia",1
-5,"Bieganie dla początkujących","2026-07-09 21:21:02.907513","maria_nowak","Sport",0
+1,"My first post about Linux","2026-07-09 21:21:02.907513","jan_kowalski","Technology",2
+2,"Recipe for pizza","2026-07-09 21:21:02.907513","maria_nowak","Cooking",1
+3,"Travel to Japan","2026-07-09 21:21:02.907513","jan_kowalski","Travel",1
+4,"Best laptops 2026","2026-07-09 21:21:02.907513","piotr_wisniewski","Technology",1
+5,"Running for beginners","2026-07-09 21:21:02.907513","maria_nowak","Sports",0
+
+
