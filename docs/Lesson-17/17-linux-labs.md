@@ -82,5 +82,3 @@ Long-term retention:
     Older backups may be compressed to reduce storage costs.
 
     Long-term backups may provide additional business value, for example historical analysis of customer activity and transactions.
-
-### 1.6
