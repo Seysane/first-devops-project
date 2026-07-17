@@ -1,0 +1,6 @@
+---
+app_path: /var/www/html
+
+database_name: app_db
+database_user: app_user
+database_password: app_password

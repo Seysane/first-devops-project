@@ -1,0 +1,11 @@
+---
+- name: Deploy LAMP stack
+  hosts: all
+  become: yes
+
+  roles:
+    - base
+    - web
+    - database
+    - php
+    - app

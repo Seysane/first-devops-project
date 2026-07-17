@@ -1,0 +1,7 @@
+---
+- name: Install apache
+  package:
+      name: "{{ web_package }}"
+      state: present
+  notify:
+    - Restart Apache

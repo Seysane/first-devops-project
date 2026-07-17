@@ -1,0 +1,11 @@
+---
+- name: Remove default Apache index page
+  file:
+    path: "{{ app_path }}/index.html"
+    state: absent
+
+- name: Deploy application files
+  template:
+    src: index.php.j2
+    dest: "{{ app_path }}/index.php"
+

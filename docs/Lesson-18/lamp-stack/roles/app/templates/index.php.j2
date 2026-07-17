@@ -1,0 +1,30 @@
+<?php
+
+$host = "localhost";
+$db   = "{{ database_name }}";
+$user = "{{ database_user }}";
+$pass = "{{ database_password }}";
+
+$conn = new mysqli($host, $user, $pass, $db);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+echo "<h1>Connected to database</h1>";
+
+$result = $conn->query("SELECT name FROM users");
+
+if (!$result) {
+    die("SQL error: " . $conn->error);
+}
+
+echo "<h2>Users:</h2>";
+
+while ($row = $result->fetch_assoc()) {
+    echo "<p>" . $row["name"] . "</p>";
+}
+
+$conn->close();
+
+?>

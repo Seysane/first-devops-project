@@ -1,0 +1,39 @@
+---
+- name: Install MySQL database packages
+  package:
+      name: "{{ database_packages }}"
+      state: present
+
+- name: Create application database
+  community.mysql.mysql_db:
+    name: "{{ database_name }}"
+    state: present
+    login_unix_socket: /run/mysqld/mysqld.sock
+
+- name: Create database user
+  community.mysql.mysql_user:
+    name: "{{ database_user }}"
+    host: localhost
+    plugin: caching_sha2_password
+    plugin_auth_string: "{{ database_password }}"
+    priv: "{{ database_name }}.*:ALL"
+    state: present
+    login_unix_socket: /run/mysqld/mysqld.sock
+
+- name: Create users table
+  community.mysql.mysql_query:
+    login_unix_socket: /run/mysqld/mysqld.sock
+    login_db: "{{ database_name }}"
+    query:
+      - |
+        CREATE TABLE IF NOT EXISTS users (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          name VARCHAR(100)
+        );
+
+      - |
+        INSERT INTO users (name)
+        SELECT 'Ansible User'
+        WHERE NOT EXISTS (
+          SELECT 1 FROM users WHERE name='Ansible User'
+        );
