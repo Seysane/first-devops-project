@@ -3,9 +3,13 @@
   file:
     path: "{{ app_path }}/index.html"
     state: absent
+  tags: 
+   - app
 
 - name: Deploy application files
   template:
     src: index.php.j2
     dest: "{{ app_path }}/index.php"
+  tags: 
+   - app
 

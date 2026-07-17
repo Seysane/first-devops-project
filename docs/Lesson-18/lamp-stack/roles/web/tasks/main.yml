@@ -5,3 +5,6 @@
       state: present
   notify:
     - Restart Apache
+  tags:
+    - web
+    

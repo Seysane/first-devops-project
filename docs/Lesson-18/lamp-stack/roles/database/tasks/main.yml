@@ -3,12 +3,16 @@
   package:
       name: "{{ database_packages }}"
       state: present
+  tags:
+    - database
 
 - name: Create application database
   community.mysql.mysql_db:
     name: "{{ database_name }}"
     state: present
     login_unix_socket: /run/mysqld/mysqld.sock
+  tags:
+    - database
 
 - name: Create database user
   community.mysql.mysql_user:
@@ -19,6 +23,8 @@
     priv: "{{ database_name }}.*:ALL"
     state: present
     login_unix_socket: /run/mysqld/mysqld.sock
+  tags:
+    - database
 
 - name: Create users table
   community.mysql.mysql_query:
@@ -37,3 +43,5 @@
         WHERE NOT EXISTS (
           SELECT 1 FROM users WHERE name='Ansible User'
         );
+  tags:
+    - database

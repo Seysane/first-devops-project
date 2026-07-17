@@ -3,9 +3,57 @@
   hosts: all
   become: yes
 
+  vars:
+    target_env: dev
+
+  pre_tasks:
+    - name: Load environment variables
+      include_vars:
+        file: "group_vars/{{ target_env }}.yml"
+  
+
   roles:
     - base
     - web
     - database
     - php
     - app
+  
+  post_tasks:
+    - name: Check Apache service
+      service_facts:
+
+    - name: Verify Apache is running
+      assert:
+        that:
+          - ansible_facts.services['apache2.service'].state == 'running'
+        fail_msg: "Apache service is not running"
+        success_msg: "Apache is running correctly"
+
+
+    - name: Check PHP installation
+      command: php -v
+      register: php_version
+      changed_when: false
+
+    - name: Verify PHP exists
+      assert:
+        that:
+          - php_version.rc == 0
+        fail_msg: "PHP is not installed"
+        success_msg: "PHP is installed correctly" 
+
+    - name: Check database exists
+      community.mysql.mysql_info:
+        filter:
+          - databases
+        login_unix_socket: /run/mysqld/mysqld.sock
+      register: mysql_info
+
+
+    - name: Verify application database exists
+      assert:
+        that:
+          - database_name in mysql_info.databases
+        fail_msg: "Database does not exist"
+        success_msg: "Database exists correctly"

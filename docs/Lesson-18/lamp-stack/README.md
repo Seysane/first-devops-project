@@ -30,10 +30,10 @@ Each role should include:
 - PHP app should be connected to database and show something
 - Ansible configuration should be idempotent.
 
-#### 1.3 Documentaion
+#### 1.3 Documentation
 
 - Create `README.md` (this file)
-- Describie what every role does
+- Describe what every role does
 
 
 #### Roles description
@@ -89,7 +89,7 @@ Tasks:
 - Deploy PHP application files
 - Configure database connection using Ansible templates
 
-## Usage
+### Usage
 
 Update the `inventory` file with the target server IP address.
 
@@ -104,4 +104,60 @@ Run the playbook:
 
 ```bash
 ansible-playbook -i inventory site.yml --ask-pass
+```
+
+
+### 2 Multi-Environment Management
+
+#### 2.1 Exercise requirements
+
+Create `group_vars` directory with files for every environment such as:
+- development (dev.yml)
+- staging (staging.yml)
+- production (prod.yml)
+
+Configure the environments:
+
+Development:
+- debug mode on
+
+Staging:
+- configuration like production one
+
+Production:
+- Strict security, optimization
+
+Implement switches between environments
+
+Use tags to select specific tasks
+
+Add variable for environment selection
+
+#### 2.2 Environment selection
+
+The environment can be selected using the `target_env` variable.
+
+```bash
+ansible-playbook -i inventory site.yml --ask-pass -e "target_env=prod"
+```
+
+#### 2.3 Available tags
+
+The playbook supports selective task execution using tags:
+
+- `web` - Apache tasks
+- `database` - MySQL tasks
+- `php` - PHP tasks
+- `app` - Application deployment
+
+Example:
+
+```bash
+ansible-playbook -i inventory site.yml --tags database
+```
+
+#### 2.4 Testing
+
+```bash
+TASK [Check Apache service] **********************************************************************ok: [192.168.1.89]                                                                                                                                                                                  TASK [Verify Apache is running] ******************************************************************ok: [192.168.1.89] => {                                                                               "changed": false,                                                                                 "msg": "Apache is running correctly"                                                          }                                                                                                                                                                                                   TASK [Check PHP installation] ********************************************************************ok: [192.168.1.89]                                                                                                                                                                                  TASK [Verify PHP exists] *************************************************************************ok: [192.168.1.89] => {                                                                               "changed": false,                                                                                 "msg": "PHP is installed correctly"                                                           }                                                                                                                                                                                                   TASK [Check database exists] *********************************************************************ok: [192.168.1.89]                                                                                                                                                                                  TASK [Verify application database exists] ********************************************************ok: [192.168.1.89] => {                                                                               "changed": false,                                                                                 "msg": "Database exists correctly"                                                            }                                                                                                                                                                                                   PLAY RECAP ***************************************************************************************192.168.1.89               : ok=17   changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
