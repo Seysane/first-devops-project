@@ -1,0 +1,32 @@
+# Ansible retry files
+*.retry
+
+# Ansible Vault files
+*.vault_pass
+
+# Ansible local files
+inventory.local
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment files
+.env
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.log
+
+# SSH keys
+*.pem
+id_rsa
+id_rsa.pub
