@@ -5,43 +5,62 @@
       state: present
   tags:
     - database
+    - mysql_install
 
-- name: Create application database
-  community.mysql.mysql_db:
-    name: "{{ database_name }}"
-    state: present
-    login_unix_socket: /run/mysqld/mysqld.sock
+- block:
+
+    - name: Create application database
+      community.mysql.mysql_db:
+        name: "{{ database_name }}"
+        state: present
+        login_unix_socket: /run/mysqld/mysqld.sock
+      tags:
+        - database_create
+
+    - name: Create database user
+      community.mysql.mysql_user:
+        name: "{{ database_user }}"
+        host: localhost
+        plugin: caching_sha2_password
+        plugin_auth_string: "{{ database_password }}"
+        priv: "{{ database_name }}.*:ALL"
+        state: present
+        login_unix_socket: /run/mysqld/mysqld.sock
+      tags:
+        - database_user
+
+    - name: Create users table
+      community.mysql.mysql_query:
+        login_unix_socket: /run/mysqld/mysqld.sock
+        login_db: "{{ database_name }}"
+        query:
+          - |
+            CREATE TABLE IF NOT EXISTS users (
+              id INT AUTO_INCREMENT PRIMARY KEY,
+              name VARCHAR(100)
+            );
+
+          - |
+            INSERT INTO users (name)
+            SELECT 'Ansible User'
+            WHERE NOT EXISTS (
+              SELECT 1 FROM users WHERE name='Ansible User'
+            );
+      tags:
+        - database_schema
+        
+  rescue:
+
+    - name: Database deployment failed
+      fail:
+        msg: "Database configuration failed. Check MySQL service and credentials."
+
+  always:
+
+    - name: Database role finished
+      debug:
+        msg: "Database configuration process completed."
+
   tags:
     - database
-
-- name: Create database user
-  community.mysql.mysql_user:
-    name: "{{ database_user }}"
-    host: localhost
-    plugin: caching_sha2_password
-    plugin_auth_string: "{{ database_password }}"
-    priv: "{{ database_name }}.*:ALL"
-    state: present
-    login_unix_socket: /run/mysqld/mysqld.sock
-  tags:
-    - database
-
-- name: Create users table
-  community.mysql.mysql_query:
-    login_unix_socket: /run/mysqld/mysqld.sock
-    login_db: "{{ database_name }}"
-    query:
-      - |
-        CREATE TABLE IF NOT EXISTS users (
-          id INT AUTO_INCREMENT PRIMARY KEY,
-          name VARCHAR(100)
-        );
-
-      - |
-        INSERT INTO users (name)
-        SELECT 'Ansible User'
-        WHERE NOT EXISTS (
-          SELECT 1 FROM users WHERE name='Ansible User'
-        );
-  tags:
-    - database
+    - database_config

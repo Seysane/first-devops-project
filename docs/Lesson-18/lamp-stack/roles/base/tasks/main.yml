@@ -3,3 +3,6 @@
   package:
       name: "{{ base_packages }}"
       state: present
+  tags:
+    - base
+    - packages

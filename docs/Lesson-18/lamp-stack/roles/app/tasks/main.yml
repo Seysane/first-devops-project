@@ -5,6 +5,7 @@
     state: absent
   tags: 
    - app
+   - index_cleanup
 
 - name: Deploy application files
   template:
@@ -12,4 +13,5 @@
     dest: "{{ app_path }}/index.php"
   tags: 
    - app
+   - deployment
 

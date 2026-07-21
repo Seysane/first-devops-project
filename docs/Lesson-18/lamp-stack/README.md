@@ -1,6 +1,6 @@
-# Lesson 18
+# Lesson 18 and 19
 
-This section documents exercises from lesson 18
+This section documents exercises from lesson 18 and 19
 
 ---
 
@@ -23,6 +23,11 @@ Each role should include:
     - Templates (if needed)
     - Handlers (if needed)
 
+Install required Ansible collections:
+
+```bash
+ansible-galaxy collection install -r requirements.yml
+```
 #### 1.2 Functionality
 
 - Apache should be configured with PHP module.
@@ -160,4 +165,112 @@ ansible-playbook -i inventory site.yml --tags database
 
 ```bash
 TASK [Check Apache service] **********************************************************************ok: [192.168.1.89]                                                                                                                                                                                  TASK [Verify Apache is running] ******************************************************************ok: [192.168.1.89] => {                                                                               "changed": false,                                                                                 "msg": "Apache is running correctly"                                                          }                                                                                                                                                                                                   TASK [Check PHP installation] ********************************************************************ok: [192.168.1.89]                                                                                                                                                                                  TASK [Verify PHP exists] *************************************************************************ok: [192.168.1.89] => {                                                                               "changed": false,                                                                                 "msg": "PHP is installed correctly"                                                           }                                                                                                                                                                                                   TASK [Check database exists] *********************************************************************ok: [192.168.1.89]                                                                                                                                                                                  TASK [Verify application database exists] ********************************************************ok: [192.168.1.89] => {                                                                               "changed": false,                                                                                 "msg": "Database exists correctly"                                                            }                                                                                                                                                                                                   PLAY RECAP ***************************************************************************************192.168.1.89               : ok=17   changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+```
+
+---
+
+## Exercises from lesson 19
+
+
+## Refactoring changes
+
+The project was refactored following Ansible best practices.
+
+### Changes introduced:
+
+- Split the playbook into independent roles:
+  - base
+  - web
+  - database
+  - php
+  - app
+
+- Added role-specific documentation.
+
+- Introduced environment-specific variables using `group_vars`:
+  - dev.yml
+  - staging.yml
+  - prod.yml
+
+- Added error handling using Ansible blocks:
+  - block
+  - rescue
+  - always
+
+- Improved task execution control by adding tags.
+
+- Added `requirements.yml` to manage external Ansible collections.
+
+- Improved idempotency by using native Ansible modules instead of shell commands.
+
+---
+
+## Maintainability and readability improvements
+
+The refactored structure improves the project by:
+
+- Separating responsibilities between roles, making the project easier to understand and modify.
+
+- Allowing individual components to be updated independently.
+
+- Making environment-specific changes possible without modifying the main playbook.
+
+- Reducing code duplication by using variables and templates.
+
+- Improving troubleshooting by using tags and structured error handling.
+
+- Making the project easier to extend with additional services in the future.
+
+---
+
+## Running playbooks in different environments
+
+Environment variables are stored in the `group_vars` directory:
+
+```text
+group_vars/
+├── dev.yml
+├── staging.yml
+└── prod.yml
+```
+The target environment can be selected using an extra variable.
+
+### Development environment
+
+```bash
+ansible-playbook -i inventory site.yml --ask-pass -e "target_env=dev"
+```
+
+#### Staging environment
+
+```bash
+ansible-playbook -i inventory site.yml --ask-pass -e "target_env=staging"
+```
+
+#### Production environment
+
+```bash
+ansible-playbook -i inventory site.yml --ask-pass -e "target_env=prod"
+```
+
+Each environment contains different configuration values, allowing the same playbook to be reused across multiple deployment scenarios.
+
+
+### Testing
+
+Configuration was verified using Ansible assertions:
+
+Apache service status check
+PHP installation verification
+Database existence verification
+
+Example:
+```bash
+ansible-playbook -i inventory site.yml --ask-pass
+```
+
+Successful execution should finish without failed tasks:
+
+```bash
+failed=0
 ```
