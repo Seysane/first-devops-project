@@ -1,0 +1,12 @@
+
+
+services:
+
+  web:
+    restart: always
+
+    ports:
+      - "80:5000"
+
+  db:
+    restart: always
