@@ -1,0 +1,8 @@
+services_status:
+  https://api.github.com: 🟢 UP
+  https://google.com: 🟢 UP
+environment_info:
+  location: Dublin
+  temperature_C: '15'
+  humidity: '64'
+  weather: 'Partly Cloudy '
