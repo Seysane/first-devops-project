@@ -1,0 +1,206 @@
+pipeline {
+    agent any
+
+    // Global environment variables used throughout the pipeline.
+    environment {
+        APP_NAME = 'jenkins-cicd2'
+        APP_VERSION = '1.0.0'
+        DEPLOY_ENV = 'staging'
+        PYTHON_VERSION = '3'
+    }
+
+    stages {
+
+        // ============================================================
+        // CHECKOUT STAGE
+        // ============================================================
+        stage('Checkout') {
+            steps {
+                script {
+                    try {
+                        echo '=== CHECKOUT STAGE ==='
+                        echo "Checking out source code for ${APP_NAME}..."
+
+                        // Checkout the source code from the repository
+                        // configured in the Jenkins Pipeline job.
+                        checkout scm
+
+                        echo 'Source code checked out successfully.'
+
+                    } catch (Exception e) {
+
+                        // Catch any error that occurs during the checkout.
+                        // Mark the current build as failed and re-throw
+                        // the exception so Jenkins stops the pipeline.
+                        echo "ERROR during Checkout: ${e.getMessage()}"
+
+                        currentBuild.result = 'FAILURE'
+                        throw e
+                    }
+                }
+            }
+        }
+
+        // ============================================================
+        // BUILD STAGE
+        // ============================================================
+        stage('Build') {
+            when {
+                // Run the Build stage only if the previous stage
+                // completed successfully.
+                expression {
+                    currentBuild.result == null ||
+                    currentBuild.result == 'SUCCESS'
+                }
+            }
+
+            steps {
+                script {
+                    try {
+                        echo '=== BUILD STAGE ==='
+                        echo "Building application: ${APP_NAME}"
+                        echo "Application version: ${APP_VERSION}"
+                        echo "Python version: ${PYTHON_VERSION}"
+
+                        // This command simulates a build process.
+                        // Python compiles the source file into bytecode
+                        // and detects syntax errors.
+                        sh 'python3 -m py_compile app.py'
+
+                        echo 'Build completed successfully.'
+
+                    } catch (Exception e) {
+
+                        // Handle any build-related error.
+                        echo "ERROR during Build: ${e.getMessage()}"
+
+                        currentBuild.result = 'FAILURE'
+                        throw e
+                    }
+                }
+            }
+        }
+
+        // ============================================================
+        // TEST STAGE
+        // ============================================================
+        stage('Test') {
+            when {
+                // Run tests only if the previous stages
+                // have completed successfully.
+                expression {
+                    currentBuild.result == null ||
+                    currentBuild.result == 'SUCCESS'
+                }
+            }
+
+            steps {
+                script {
+                    try {
+                        echo '=== TEST STAGE ==='
+                        echo 'Running automated tests...'
+
+                        // Execute the project's test suite using pytest.
+                        sh 'python3 -m pytest tests/ -v'
+
+                        echo 'All tests passed successfully.'
+
+                    } catch (Exception e) {
+
+                        // Handle test failures.
+                        // The exception is re-thrown so that Jenkins
+                        // marks the pipeline as failed.
+                        echo "ERROR during Test: ${e.getMessage()}"
+
+                        currentBuild.result = 'FAILURE'
+                        throw e
+                    }
+                }
+            }
+        }
+
+        // ============================================================
+        // DEPLOY STAGE
+        // ============================================================
+        stage('Deploy') {
+            when {
+                // Deploy only if all previous stages succeeded
+                // AND the deployment environment is set to "staging".
+                expression {
+                    (currentBuild.result == null ||
+                     currentBuild.result == 'SUCCESS') &&
+                    env.DEPLOY_ENV == 'staging'
+                }
+            }
+
+            steps {
+                script {
+                    try {
+                        echo '=== DEPLOY STAGE ==='
+                        echo "Deploying application: ${APP_NAME}"
+                        echo "Application version: ${APP_VERSION}"
+                        echo "Target environment: ${DEPLOY_ENV}"
+
+                        // Simulate the deployment process.
+                        // In a real-world project this section could contain
+                        // Docker, Kubernetes, Ansible, SSH or cloud commands.
+                        sh '''
+                            echo "Copying application files..."
+                            sleep 2
+
+                            echo "Restarting application..."
+                            sleep 2
+
+                            echo "Application deployment completed."
+                        '''
+
+                        echo 'Deploy completed successfully.'
+
+                    } catch (Exception e) {
+
+                        // Handle any deployment-related error.
+                        echo "ERROR during Deploy: ${e.getMessage()}"
+
+                        currentBuild.result = 'FAILURE'
+                        throw e
+                    }
+                }
+            }
+        }
+    }
+
+    // ================================================================
+    // POST ACTIONS
+    // ================================================================
+    post {
+
+        // This block is executed when the entire pipeline
+        // completes successfully.
+        success {
+            echo '=============================================='
+            echo 'PIPELINE COMPLETED SUCCESSFULLY'
+            echo "Application: ${APP_NAME}"
+            echo "Version: ${APP_VERSION}"
+            echo "Environment: ${DEPLOY_ENV}"
+            echo '=============================================='
+        }
+
+        // This block is executed when any stage fails.
+        failure {
+            echo '=============================================='
+            echo 'PIPELINE FAILED'
+            echo "Application: ${APP_NAME}"
+            echo 'Please check the Jenkins console output for details.'
+            echo '=============================================='
+        }
+
+        // This block is executed regardless of the pipeline result.
+        // It can be used for cleanup, logging or notifications.
+        always {
+            echo '=============================================='
+            echo "Pipeline '${APP_NAME}' has finished."
+            echo "Build result: ${currentBuild.currentResult}"
+            echo '=============================================='
+        }
+    }
+}
