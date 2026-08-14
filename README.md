@@ -189,8 +189,16 @@ I am mastering throughout the course.
 │   │   ├── Dockerfile                     # Dockerfile with dependencies
 │   │   ├── README.md                      # Project documentation
 │   │   └── requirements.txt               # Project requirements
+│   ├── Lesson-23                        # Python 1/2
+│   │   ├── address_book.py                # Address book app
+│   │   └── text_analysis.py               # Text analysis app
+│   ├── Lesson-24                        # Python 2/2
+│   │   ├── .gitignore                     # Ignored files
+│   │   ├── daily_report.yaml              # Weather daily report config file
+│   │   ├── library_system.py              # Library system app
+│   │   ├── requirements.txt               # Project requirements
+│   │   └── service_monitor.py             # Monitoring app
 └── README.md                          # Main README.md of first-devops-project course
-
 ```
 
 
