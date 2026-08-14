@@ -2,11 +2,11 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Instalacja zależności
+# Dependency install
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Kopiowanie kodu źródłowego
+# Main app copy
 COPY app.py .
 
 EXPOSE 5000

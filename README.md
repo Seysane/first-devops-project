@@ -165,6 +165,30 @@ I am mastering throughout the course.
 │   │           ├── requirements.yml         # Ansible Galaxy dependencies
 │   │           ├── site.yml                 # Main Ansible playbook
 │   │           └── .gitignore               # Git ignore rules
+│   ├── Lesson-20                        # Docker 1/3
+│   │   ├── docker-nginx-site              # Docker nginx setup
+│   │   │   ├── Dockerfile                   # Dockerfile that copy and replace standard site with my own
+│   │   │   ├── image.png                    # Proof of work
+│   │   │   ├── index.html                   # HTML site replacement
+│   │   │   └── README.md                    # Log history / Proof of work
+|   |   ├── 20-linux-labs.md               # Project documentation
+│   │   └── image.png                      # HTML site replacement
+│   ├── Lesson-21                        # Docker 2/3
+│   │   ├── app.py                         # App file
+│   │   ├── Dockerfile                     # Dockerfile with dependencies and core app installs
+│   │   ├── README.md                      # Project documentation
+│   │   └── requirements.txt               # Project requirements
+│   ├── Lesson-22                        # Docker 3/3 - docker-compose
+│   │   ├── .dockerignore                  # Ignored files
+│   │   ├── .env                           # Secret settings
+│   │   ├── .gitignore                     # Ignored files
+│   │   ├── app.py                         # App file
+│   │   ├── docker-compose.override.yml    # docker-compose override file
+│   │   ├── docker-compose.prod.yml        # docker-compose production file
+│   │   ├── docker-compose.yml             # docker-compose file
+│   │   ├── Dockerfile                     # Dockerfile with dependencies
+│   │   ├── README.md                      # Project documentation
+│   │   └── requirements.txt               # Project requirements
 └── README.md                          # Main README.md of first-devops-project course
 
 ```
