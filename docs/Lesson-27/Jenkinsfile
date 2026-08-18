@@ -1,0 +1,43 @@
+pipeline {
+    agent {
+        label 'linux-worker-01'
+    }
+
+    stages {
+        stage('System Information') {
+            steps {
+                sh 'uname -a'
+                sh 'free -m'
+            }
+        }
+
+        stage('Environment Check') {
+            steps {
+                sh '''
+                    echo "NODE_ENV=${NODE_ENV}"
+
+                    if [ "$NODE_ENV" = "production" ]; then
+                        echo "NODE_ENV is correctly configured as production."
+                    else
+                        echo "ERROR: NODE_ENV is not configured correctly."
+                        exit 1
+                    fi
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Agent test completed successfully.'
+        }
+
+        failure {
+            echo 'Agent test failed.'
+        }
+
+        always {
+            echo 'Pipeline execution finished.'
+        }
+    }
+}
