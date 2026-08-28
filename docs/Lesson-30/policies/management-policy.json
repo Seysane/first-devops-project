@@ -1,0 +1,54 @@
+{
+"Version": "2012-10-17",
+"Statement": [
+{
+"Sid": "EC2ManagementReadOnly",
+"Effect": "Allow",
+"Action": [
+"ec2:Describe*"
+],
+"Resource": "*"
+},
+{
+"Sid": "ECSManagementReadOnly",
+"Effect": "Allow",
+"Action": [
+"ecs:Describe*",
+"ecs:List*"
+],
+"Resource": "*"
+},
+{
+"Sid": "RDSManagementReadOnly",
+"Effect": "Allow",
+"Action": [
+"rds:Describe*",
+"rds:ListTagsForResource"
+],
+"Resource": "*"
+},
+{
+"Sid": "S3ManagementReadOnly",
+"Effect": "Allow",
+"Action": [
+"s3:ListAllMyBuckets",
+"s3:ListBucket",
+"s3:GetObject"
+],
+"Resource": "*"
+},
+{
+"Sid": "CloudWatchManagementReadOnly",
+"Effect": "Allow",
+"Action": [
+"cloudwatch:Describe*",
+"cloudwatch:Get*",
+"cloudwatch:List*",
+"logs:Describe*",
+"logs:Get*",
+"logs:FilterLogEvents"
+],
+"Resource": "*"
+}
+]
+}

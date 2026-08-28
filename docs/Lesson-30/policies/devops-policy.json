@@ -1,0 +1,81 @@
+{
+"Version": "2012-10-17",
+"Statement": [
+{
+"Sid": "EC2DevOpsManagement",
+"Effect": "Allow",
+"Action": [
+"ec2:Describe*",
+"ec2:StartInstances",
+"ec2:StopInstances",
+"ec2:RebootInstances",
+"ec2:CreateTags"
+],
+"Resource": "*"
+},
+{
+"Sid": "VPCDevOpsReadAccess",
+"Effect": "Allow",
+"Action": [
+"ec2:DescribeVpcs",
+"ec2:DescribeSubnets",
+"ec2:DescribeRouteTables",
+"ec2:DescribeInternetGateways",
+"ec2:DescribeNatGateways",
+"ec2:DescribeNetworkInterfaces"
+],
+"Resource": "*"
+},
+{
+"Sid": "ECSDevOpsManagement",
+"Effect": "Allow",
+"Action": [
+"ecs:Describe*",
+"ecs:List*",
+"ecs:CreateCluster",
+"ecs:DeleteCluster",
+"ecs:CreateService",
+"ecs:UpdateService",
+"ecs:DeleteService",
+"ecs:RegisterTaskDefinition",
+"ecs:DeregisterTaskDefinition"
+],
+"Resource": "*"
+},
+{
+"Sid": "S3DevOpsManagement",
+"Effect": "Allow",
+"Action": [
+"s3:ListAllMyBuckets",
+"s3:ListBucket",
+"s3:GetObject",
+"s3:PutObject",
+"s3:DeleteObject"
+],
+"Resource": "*"
+},
+{
+"Sid": "RDSDevOpsManagement",
+"Effect": "Allow",
+"Action": [
+"rds:Describe*",
+"rds:StartDBInstance",
+"rds:StopDBInstance"
+],
+"Resource": "*"
+},
+{
+"Sid": "CloudWatchDevOpsAccess",
+"Effect": "Allow",
+"Action": [
+"cloudwatch:Describe*",
+"cloudwatch:Get*",
+"cloudwatch:List*",
+"logs:Describe*",
+"logs:Get*",
+"logs:FilterLogEvents"
+],
+"Resource": "*"
+}
+]
+}
